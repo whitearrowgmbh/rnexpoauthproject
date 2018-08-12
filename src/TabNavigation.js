@@ -3,12 +3,12 @@
  * WhiteArrow GmbH, DE-85405 Nandlstadt
  */
 
-import {createTabNavigator} from 'react-navigation';
+import {createBottomTabNavigator} from 'react-navigation';
 
 import SignIn from './Auth/SignIn';
 import SignUp from './Auth/SignUp';
 
-const tabs = createTabNavigator({
+const tabs = createBottomTabNavigator({
 									SignIn: {
 										screen: SignIn
 									},

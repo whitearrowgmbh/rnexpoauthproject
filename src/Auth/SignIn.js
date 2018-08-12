@@ -5,7 +5,7 @@ import Amplify, {Auth} from 'aws-amplify';
 
 /*
  username: Test
- password: password1
+ password: Password1
  */
 
 
@@ -13,32 +13,49 @@ export default class SignIn extends React.Component {
 	state = {
 		username        : '',
 		password        : '',
-		confirmationCode: ''
+		confirmationCode: '',
+		user            : {},
+		status          : ''
 	};
 
 
 	signIn = () => {
 		const { username, password } = this.state;
 
-		Auth.signIn({
-						username,
-						password,
-					})
-			.then((user) => console.log('App - signIn(): successfully signed in with user ', user))
-			.catch((e) => console.log('App - signIn(): exception: ', e));
+		this.setState({ status: 'signing in...' });
+
+		Auth.signIn(username,
+					password)
+			.then((user) => {
+				this.setState({ user, status: 'signed in' });
+				console.log('App - signIn(): successfully signed in with user ', user);
+			})
+			.catch((e) => {
+				console.log('App - signIn(): exception: ', e);
+				this.setState({ status: e.message });
+			});
 
 	};
 
 	confirmSignIn = () => {
-		const { username, confirmationCode } = this.state;
+		const { user, confirmationCode } = this.state;
 
-		Auth.confirmSignIn(username, confirmationCode)
-			.then(() => console.log('App - confirmSignIn(): successfully confirmed'))
-			.catch((e) => console.log('App - confirmSignIn(): exception: ', e));
+		debugger;
+
+		Auth.confirmSignIn(user, confirmationCode, 'SMS_MFA')
+			.then((data) => {
+				console.log('SignIn - confirmSignIn(): successfully confirmed');
+				console.log('SignIn - confirmSignIn(): data signUpConfirm = ', data);
+				this.setState({ status: 'signin confirmed' });
+			})
+			.catch((e) => {
+				console.log('App - confirmSignIn(): exception: ', e);
+				this.setState({ status: e.message });
+			});
 	};
 
 	onChange = (key, value) => {
-		console.group('OnChange');
+		console.group('OnChange SignIn');
 		console.log('App - onChange(): key =', key);
 		console.log('App - onChange(): value =', value);
 		console.groupEnd();
@@ -59,27 +76,34 @@ export default class SignIn extends React.Component {
 						   secureTextEntry
 						   onChangeText={value => this.onChange('password', value)}/>
 				<Button title="Sign in"
-						onPress={this.signin}/>
+						onPress={this.signIn}/>
 				<TextInput style={styles.textInput}
 						   placeholder="confirmation code"
+						   keyboardType="numeric"
 						   onChangeText={value => this.onChange('confirmationCode', value)}/>
 				<Button title="Confirm"
 						onPress={this.confirmSignIn}/>
+
+				<Text style={styles.statusLabel}>{this.state.status}</Text>
 			</View>
 		);
 	}
 }
 
 const styles = StyleSheet.create({
-									 container: {
+									 container  : {
 										 flex           : 1,
 										 backgroundColor: '#fff',
 										 justifyContent : 'center',
 									 },
-									 textInput: {
+									 textInput  : {
 										 height           : 50,
 										 margin           : 10,
 										 borderBottomWidth: 2,
 										 borderBottomColor: '#2196F3'
+									 },
+									 statusLabel: {
+										 margin: 20,
+										 color : '#0000cc'
 									 }
 								 });

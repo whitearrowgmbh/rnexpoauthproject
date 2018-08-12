@@ -15,12 +15,15 @@ export default class SignUp extends React.Component {
 		password        : '',
 		email           : '',
 		phone_number    : '',
-		confirmationCode: ''
+		confirmationCode: '',
+		status          : ''
 	};
 
 
 	signup = () => {
 		const { username, password, email, phone_number } = this.state;
+
+		this.setState({ status: 'signup started...' });
 
 		Auth.signUp({
 						username,
@@ -30,8 +33,14 @@ export default class SignUp extends React.Component {
 							phone_number
 						}
 					})
-			.then(() => console.log('App - signUp(): successfully signed up'))
-			.catch((e) => console.log('App - signUp(): exception: ', e));
+			.then(() => {
+				console.log('App - signUp(): successfully signed up');
+				this.setState({ status: 'signed up' });
+			})
+			.catch((e) => {
+				console.log('App - signUp(): exception: ', e);
+				this.setState({ status: 'error in signup' });
+			});
 
 	};
 
@@ -39,8 +48,14 @@ export default class SignUp extends React.Component {
 		const { username, confirmationCode } = this.state;
 
 		Auth.confirmSignUp(username, confirmationCode)
-			.then(() => console.log('App - confirmSignup(): successfully confirmed'))
-			.catch((e) => console.log('App - confirmSignup(): exception: ', e));
+			.then(() => {
+				console.log('App - confirmSignup(): successfully confirmed');
+				this.setState({ status: 'signup confirmed' });
+			})
+			.catch((e) => {
+				console.log('App - confirmSignup(): exception: ', e);
+				this.setState({ status: 'error signup confirmation' });
+			});
 	};
 
 	onChange = (key, value) => {
@@ -77,21 +92,27 @@ export default class SignUp extends React.Component {
 						   onChangeText={value => this.onChange('confirmationCode', value)}/>
 				<Button title="Confirm"
 						onPress={this.confirmSignup}/>
+				<Text style={styles.statusLabel}>{this.state.status}</Text>
+
 			</View>
 		);
 	}
 }
 
 const styles = StyleSheet.create({
-									 container: {
+									 container  : {
 										 flex           : 1,
 										 backgroundColor: '#fff',
 										 justifyContent : 'center',
 									 },
-									 textInput: {
+									 textInput  : {
 										 height           : 50,
 										 margin           : 10,
 										 borderBottomWidth: 2,
 										 borderBottomColor: '#2196F3'
+									 },
+									 statusLabel: {
+										 margin: 20,
+										 color : '#0000cc'
 									 }
 								 });
