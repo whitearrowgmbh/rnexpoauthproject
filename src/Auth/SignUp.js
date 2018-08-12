@@ -1,9 +1,7 @@
 import React from 'react';
 import {StyleSheet, Text, View, TextInput, Button} from 'react-native';
 import Amplify, {Auth} from 'aws-amplify';
-import AWSConfig from './aws-exports';
 
-Amplify.configure(AWSConfig);
 
 /*
  username: Test
@@ -11,8 +9,7 @@ Amplify.configure(AWSConfig);
  */
 
 
-export default class App extends React.Component {
-
+export default class SignUp extends React.Component {
 	state = {
 		username        : '',
 		password        : '',

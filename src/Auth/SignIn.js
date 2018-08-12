@@ -1,9 +1,7 @@
 import React from 'react';
 import {StyleSheet, Text, View, TextInput, Button} from 'react-native';
 import Amplify, {Auth} from 'aws-amplify';
-import AWSConfig from './aws-exports';
 
-Amplify.configure(AWSConfig);
 
 /*
  username: Test
@@ -11,39 +9,32 @@ Amplify.configure(AWSConfig);
  */
 
 
-export default class App extends React.Component {
-
+export default class SignIn extends React.Component {
 	state = {
 		username        : '',
 		password        : '',
-		email           : '',
-		phone_number    : '',
 		confirmationCode: ''
 	};
 
 
-	signup = () => {
-		const { username, password, email, phone_number } = this.state;
+	signIn = () => {
+		const { username, password } = this.state;
 
-		Auth.signUp({
+		Auth.signIn({
 						username,
 						password,
-						attributes: {
-							email,
-							phone_number
-						}
 					})
-			.then(() => console.log('App - signUp(): successfully signed up'))
-			.catch((e) => console.log('App - signUp(): exception: ', e));
+			.then((user) => console.log('App - signIn(): successfully signed in with user ', user))
+			.catch((e) => console.log('App - signIn(): exception: ', e));
 
 	};
 
-	confirmSignup = () => {
+	confirmSignIn = () => {
 		const { username, confirmationCode } = this.state;
 
-		Auth.confirmSignUp(username, confirmationCode)
-			.then(() => console.log('App - confirmSignup(): successfully confirmed'))
-			.catch((e) => console.log('App - confirmSignup(): exception: ', e));
+		Auth.confirmSignIn(username, confirmationCode)
+			.then(() => console.log('App - confirmSignIn(): successfully confirmed'))
+			.catch((e) => console.log('App - confirmSignIn(): exception: ', e));
 	};
 
 	onChange = (key, value) => {
@@ -67,19 +58,13 @@ export default class App extends React.Component {
 						   placeholder="password"
 						   secureTextEntry
 						   onChangeText={value => this.onChange('password', value)}/>
-				<TextInput style={styles.textInput}
-						   placeholder="email"
-						   onChangeText={value => this.onChange('email', value)}/>
-				<TextInput style={styles.textInput}
-						   placeholder="phone number"
-						   onChangeText={value => this.onChange('phone_number', value)}/>
-				<Button title="Sign up"
-						onPress={this.signup}/>
+				<Button title="Sign in"
+						onPress={this.signin}/>
 				<TextInput style={styles.textInput}
 						   placeholder="confirmation code"
 						   onChangeText={value => this.onChange('confirmationCode', value)}/>
 				<Button title="Confirm"
-						onPress={this.confirmSignup}/>
+						onPress={this.confirmSignIn}/>
 			</View>
 		);
 	}
